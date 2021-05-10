@@ -1,39 +1,3 @@
-//  test
-//  var сompanyUsers = [
-//     {
-//         name:"Boris",
-//         email:"bbbb@mail.ru",
-//     }, 
-//     {
-//         name:"Ivan",
-//         email:"iiii@mail.ru",
-//     }, 
-//     {
-//         name:"Anna",
-//         email:"aaa@mail.ru",
-//     }, 
-//     {
-//         name:"Misha",
-//         email:"mmm@mail.ru",
-//     }, 
-//     {
-//         name:"Roman",
-//         email:"rrr@mail.ru",
-//     }, 
-// ]
-
-// var ordinal = prompt('Введите порядковый номер пользователя');
-// if (Number(ordinal) >= 0) {
-//     var index = +ordinal - 1;
-//     if (index > 0 && index < сompanyUsers.length){
-//         alert(сompanyUsers[index].name  + " " + сompanyUsers[index].email);
-//     }
-//     else 
-//     alert("Нет такого пользователя");
-// }
-// else {
-//     alert ("Введите число от 0 и до" + " " + сompanyUsers.length);
-// }
 //  Lesson 3
 
 function getArrSum(numbers){
