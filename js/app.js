@@ -1,56 +1,37 @@
-console.table(countries);
-
-
-// 1
-function SimplifyCountries(countries){
-    let newCountries = countries.map(function(country) {
-        return {
-            name: country.name,
-            capital: country.capital,
-            region: country.region
-        }
-    })
-    return newCountries;
-}
-
-console.log(SimplifyCountries(countries))
-
-
-// 2
-function SortCountries(countries, property){
-    let p1 = countries[0][property];
-    if (typeof p1 === 'number') {
-        return countries.sort(function(c1, c2) {
-            let pvalue1 = c1[property];
-            let pvalue2 = c2[property];
-            return pvalue2 - pvalue1; 
-        });
-    } 
-    else if (typeof p1 === 'string') {
-        return countries.sort(function(c1, c2) {
-            let pvalue1 = c1[property];
-            let pvalue2 = c2[property];
-            if (pvalue2 > pvalue1) {
-                    return -1;
-                 } else if (pvalue2 < pvalue1) {
-                    return 1;
-                 } else {
-                     return 0;
-                 }
-        });
-       
+const renderCountries = countries => {
+    console.log(countries);
+    let htmlStr = '';
+    for(let country of countries) {
+        htmlStr += `<tr>
+            <td>${country.region}</td>
+            <td>${country.currencies.join(", ")}</td>
+            <td>${country.languages}</td>
+            <td><img src="${country.flag}" style="height: 50px;"></td>
+        </tr>`;
     }
+
+    console.log(htmlStr);
+    document.querySelector('table > tbody').innerHTML = htmlStr;
 }
 
-console.log(SortCountries(countries, "name"));
-console.log(SortCountries(countries, "area"));
-
-
-// 3
-function getAvarage(countries, property){
-    return countries.reduce(function(acc, el) {
-        let value = el[property];
-        return acc + value;
-      }, 0) / countries.length; 
+const getData = () => {
+    fetch('https://restcountries.eu/rest/v2/all')
+        .then(res => res.json()).then(data => {
+            let countries = data.map(country => {
+                return {
+                    region: country.region,
+                    flag: country.flag,
+                    languages: country.languages.map(language => {
+                        return language.name;
+                    }),
+                    currencies: country.currencies.map(currency => {
+                        return currency.name;
+                    })
+                };
+            });
+            renderCountries(countries);
+    });
 }
-console.log("CA:" + " " + getAvarage(countries, "area"));
+
+document.addEventListener("DOMContentLoaded", () => { getData(); });
+
