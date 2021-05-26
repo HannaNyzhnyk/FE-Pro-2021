@@ -30,7 +30,7 @@ window.onload = function() {
         })
     }
 
-    const SelectTable  = () => {
+    const selectTable  = () => {
         $('.countries-select').change (e => {
             $('#search').val("");
             renderCountries(countries);
@@ -52,7 +52,7 @@ window.onload = function() {
            selectStr += `<option value="${country.name}">${country.name}</option>`;
         }
         $('.countries-select').html(selectStr);
-    } 
+    }
 
     const renderCountries = countries => {
         let htmlStr = '';
@@ -72,7 +72,7 @@ window.onload = function() {
             htmlStr = '<tr><td colspan="8" class="text-center">Не найдено</td></tr>'
         }
         $('table > tbody').html(htmlStr);
-        SelectTable();
+        selectTable();
     };
 
     const getData = () => {
