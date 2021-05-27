@@ -54,6 +54,25 @@ window.onload = function() {
         $('.countries-select').html(selectStr);
     }
 
+    const selectAutocompleteOptions = countries => {
+        let availableTags = countries.map(function(country) {
+            return country.name
+        })
+        $( "#tags" ).autocomplete({
+           source: availableTags,
+           select: function( e, ui ) {
+            $('#search').val("");
+            renderCountries(countries); 
+            let countryName =  ui.item.value.replace(" ", "_");
+            let selector = `[data-name]:not([data-name=${(countryName)}])`;
+                let countryRow = $(selector);
+                countryRow.hide();
+                $(`[data-name=${(countryName)}]`).show();
+           },
+        });
+    }
+
+
     const renderCountries = countries => {
         let htmlStr = '';
         for(let country of countries) {
@@ -91,9 +110,10 @@ window.onload = function() {
                 window.countries = countries;
                 renderCountries(countries);
                 renderOptions(countries);
+                selectAutocompleteOptions(countries)
                 setListeners();
         });
     }
 
     getData();
-cd }
+}
