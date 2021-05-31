@@ -1,119 +1,48 @@
-window.onload = function() {
-    window.countries = null;
+function Auto(brand, model, issue, vinCode) {
+    this.brand = brand;
+    this.model = model;
+    this.issue = issue;
+    this.vinCode = vinCode;
+}
 
-    const setListeners = () => {
-        $('#search').on('keyup', e => {
-            let value = e.target.value;
-            value = value.toLowerCase();
-            let filteredCountries = window.countries.filter(country => country.name.toLowerCase().indexOf(value) > -1
-                || country.capital.toLowerCase().indexOf(value) > -1
-                || country.region.toLowerCase().indexOf(value) > -1);
+Auto.prototype.log = function() {
+    console.log(`марка: ${this.brand}, модель: ${this.model}, рік випуску: ${this.issue}, він-код: ${this.vinCode}`);
+}
 
-            renderCountries(filteredCountries);
-        });
-
-        $('table thead th.bg-warning').on('click touch', e => {
-            let field = e.currentTarget.innerText;
-            field = field.toLowerCase();
-            let numerableFields = ['population', 'area'];
-            let sortedCountries = window.countries.sort((a, b) => {
-                return numerableFields.indexOf(field) > -1 ? a[field] < b[field] : a[field] > b[field];
-            });
-            $('table thead th.bg-warning').removeClass('bg-danger text-white');
-            $(e.currentTarget).addClass('bg-danger text-white')
-            renderCountries(sortedCountries);
-        });
-
-        $('td').on('click', e => {
-            $('table tbody tr').removeClass('bg-dark text-white');
-            $(e.currentTarget).parent('tr').addClass('bg-dark text-white');
-        })
+Auto.prototype.checkVin  = function() {
+    let code  = this.vinCode;
+    if (code.length === 16){
+        return true;
+    } else {
+        return false;
     }
+}
 
-    const selectTable  = () => {
-        $('.countries-select').change (e => {
-            $('#search').val("");
-            renderCountries(countries);
-            let countryName = e.currentTarget.value.replace(" ", "_");
-            if(countryName) {
-                let selector = `[data-name]:not([data-name=${(countryName)}])`;
-                let countryRow = $(selector);
-                countryRow.hide();
-                $(`[data-name=${(countryName)}]`).show();
-            } else {
-                $('[data-name]').show();
-            }
-        })
-    }
+function Auto_Fuel(brand, model, issue, vinCode, engineVolume, consumption) {
+    this.brand = brand;
+    this.model = model;
+    this.issue = issue;
+    this.vinCode = vinCode;
+    this.engineVolume = engineVolume;
+    this.consumption = consumption;
+}
 
-    const renderOptions = countries => {
-        let selectStr = '<option value="">Not selected</option>';
-        for(let country of countries) {
-           selectStr += `<option value="${country.name}">${country.name}</option>`;
-        }
-        $('.countries-select').html(selectStr);
-    }
+Auto_Fuel.prototype = Object.create(Auto.prototype)
 
-    const selectAutocompleteOptions = countries => {
-        let availableTags = countries.map(function(country) {
-            return country.name
-        })
-        $( "#tags" ).autocomplete({
-           source: availableTags,
-           select: function( e, ui ) {
-            $('#search').val("");
-            renderCountries(countries); 
-            let countryName =  ui.item.value.replace(" ", "_");
-            let selector = `[data-name]:not([data-name=${(countryName)}])`;
-                let countryRow = $(selector);
-                countryRow.hide();
-                $(`[data-name=${(countryName)}]`).show();
-           },
-        });
-    }
+Auto_Fuel.prototype.showFuelConsumption = function(){
+    return console.log(`объем двигателя:${this.engine_volume}, расход:${this.engineVolume}л.`)
+}
 
+function Auto_Electric(brand, model, issue, vinCode, batteryСapacity) {
+    this.brand = brand;
+    this.model = model;
+    this.issue = issue;
+    this.vinCode = vinCode;
+    this.batteryСapacity = batteryСapacity;
+}
 
-    const renderCountries = countries => {
-        let htmlStr = '';
-        for(let country of countries) {
-            htmlStr += `<tr data-name=${country.name.replace(" ", "_")}>
-            <td>${country.name}</td>
-            <td>${country.capital}</td>
-            <td>${country.region}</td>
-            <td>${country.population}</td>
-            <td>${country.area}</td>
-            <td>${country.currencies}</td>
-            <td>${country.languages}</td>
-            <td><img src="${country.flag}"  height="30px"/></td>
-        </tr>`;
-        }
-        if(!countries.length) {
-            htmlStr = '<tr><td colspan="8" class="text-center">Не найдено</td></tr>'
-        }
-        $('table > tbody').html(htmlStr);
-        selectTable();
-    };
+Auto_Electric.prototype = Object.create(Auto.prototype)
 
-    const getData = () => {
-        let countries = [];
-        fetch('https://restcountries.eu/rest/v2/all')
-            .then(res => res.json()).then(data => {
-                countries = data.map(country => {
-                    let {name, population, capital, area, currencies, languages, flag, region} = country;
-                    return {
-                        name, population, capital: capital || '---', flag, region: region || '---',
-                        area: area || 0,
-                        currencies: currencies.map(el => el.name).join(', '),
-                        languages: languages.map(el => el.name).join(', ')
-                    };
-                });
-                window.countries = countries;
-                renderCountries(countries);
-                renderOptions(countries);
-                selectAutocompleteOptions(countries)
-                setListeners();
-        });
-    }
-
-    getData();
+Auto_Electric.prototype.showBatteryConfig = function(){
+    return console.log(`емкость батареи:${this.batteryСapacity}`)
 }
