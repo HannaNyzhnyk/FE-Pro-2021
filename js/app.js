@@ -1,60 +1,120 @@
-window.onload = function() {
-    window.courses = null;
-    let now = new Date();
-    const selectDate  = () => {
-        $('#date_input').val(now.toISOString().slice(0, 10));
-        $('#date_input').change(function(e) {
-            var dateString = $(e.currentTarget).val();
-            var date = new Date(dateString)
-            if (date < now) {
-                getData(date);  
-            } else {
-                alert("Это будущий период");
+$(document).ready(() => {
+
+     
+    $('.countries-select').on('change', e =>{
+        let value = e.currentTarget.value;
+        $.ajax({
+            url: 'https://api-football-v1.p.rapidapi.com/v3/leagues',
+            data: {
+                code: value
+            },
+            headers: {
+                "x-rapidapi-key": "416f158753msh7d5c5353b0536e6p161137jsnbf07d7ea1bef",
+                "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+                "useQueryString": true
             }
-                    
-        });
+        }).then(data => {
+            console.log(data);
+            let leagues = data.response;
+            renderOptionsleagues(leagues);
+           
+        })
+
+    })
+
+    $('.leagues-select').on('change', e =>{
+        let value = e.currentTarget.value;
+        $.ajax({
+            url: 'https://api-football-v1.p.rapidapi.com/v3/standings',
+            data: {
+                league: value,
+                season: '2020'
+            },
+            headers: {
+                "x-rapidapi-key": "416f158753msh7d5c5353b0536e6p161137jsnbf07d7ea1bef",
+                "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+                "useQueryString": true
+            }
+        }).then(data => {
+            console.log(data);
+            let standings = data.response[0].league.standings;
+            renderOptionsStandings(standings);
+        })
+
+    })
+
+    $('.standings-select').on('change', e =>{
+        let value = e.currentTarget.value;
+        $.ajax({
+            url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+            data: {
+                team: value,
+                season: '2020'
+            },
+            headers: {
+                "x-rapidapi-key": "416f158753msh7d5c5353b0536e6p161137jsnbf07d7ea1bef",
+                "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+                "useQueryString": true
+            }
+        }).then(data => {
+            console.log("players", data);
+            let players = data.response;
+            renderPlayers(players);
+        })
+
+    })
+
+    const renderOptionsCountry = (data) => {
+        let selectStr = '<option value="">Not selected</option>';
+        for(let el of data) {
+           selectStr += `<option value="${el.code}">${el.name}</option>`;
+        }
+        $('.countries-select').html(selectStr);
     }
 
-    const renderCourses = сourses => {
+    const renderOptionsleagues = (data) => {
+        let selectStr = '<option value="">Not selected</option>';
+        for(let el of data) {
+           selectStr += `<option value="${el.league.id}">${el.league.name}</option>`;
+        }
+        $('.leagues-select').html(selectStr);
+    }
+
+    const renderOptionsStandings = (data) => {
+        console.log("renderOptionsStandings",data);
+        let selectStr = '<option value="">Not selected</option>';
+        for(let el of data[0]) {
+           selectStr += `<option value="${el.team.id}">${el.team.name}</option>`;
+        }
+        $('.standings-select').html(selectStr);
+    }
+
+    function renderPlayers(data) {
+        console.log("renderPlayers",data);
         let htmlStr = '';
-        for(let сourse of сourses) {
+        for(let el of data) {
             htmlStr += `<tr>
-            <td>${сourse.currency}</td>
-            <td>${сourse.rate}</td>
-            <td>${сourse.exchangedate}</td>
+            <td>${el.player.name}</td>
         </tr>`;
         }
-        
+        if(!htmlStr.length) {
+            htmlStr = '<tr><td colspan="8" class="text-center">Не найдено</td></tr>'
+        }
         $('table > tbody').html(htmlStr);
-    };
+   }
 
-    const getData = (date) => {
-        let courses = [];
-        function format(date) {
-            var d = date.getDate();
-            var m = date.getMonth() + 1;
-            var y = date.getFullYear();
-            return '' + y + (m<=9 ? '0' + m : m) + (d <= 9 ? '0' + d : d);
-        }        
-        let formatedDate = format(date);
-        fetch(`https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json&date=${formatedDate}`)
-            .then((res) => res.json())
-            .then(data => {
-                console.log(data);
-                courses = data.map(сourse => {
-                    let {txt, rate, exchangedate} = сourse;
-                    return {
-                        exchangedate: exchangedate,
-                        rate: rate || 0,
-                        currency: txt
-                    };
-                });
-                window.courses = courses;
-                renderCourses(courses);
-            });
-    }
-    selectDate();
-    getData(now);
-
-}
+    $.ajax({
+        url: 'https://api-football-v1.p.rapidapi.com/v3/countries',
+        headers: {
+            "x-rapidapi-key": "416f158753msh7d5c5353b0536e6p161137jsnbf07d7ea1bef",
+            "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+            "useQueryString": true
+        }
+    }).then(data => {
+        console.log("got counties", data);
+        countries = data.response;
+        renderOptionsCountry(countries);
+    })
+    
+});
 
