@@ -112,7 +112,7 @@ $(document).ready(() => {
         }
     }).then(data => {
         console.log("got counties", data);
-        countries = data.response;
+        let countries = data.response;
         renderOptionsCountry(countries);
     })
     
